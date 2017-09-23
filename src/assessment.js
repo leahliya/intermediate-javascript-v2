@@ -24,21 +24,21 @@
 // ```
 
 // Remove entries from the array until only correct answers remain
-
+//var scopeArray2 = ["street", "firstFloor", "secondFloor", "neighbors", "neighborsSecondFloor"];
 // Which function(s) access the weather variable and get "rainy" (Delete wrong answers, leave correct ones)
-var scopeArray1 = ["street", "firstFloor", "secondFloor", "neighbors", "neighborsSecondFloor"];
+var scopeArray1 = ["street", "neighbors", "neighborsSecondFloor"];
 
 // Which function(s) access the weather variable and get "dry" (Delete wrong answers, leave correct ones)
-var scopeArray2 = ["street", "firstFloor", "secondFloor", "neighbors", "neighborsSecondFloor"];
+var scopeArray2 = ["firstFloor", "secondFloor"];
 
 // Which function(s) access the ceiling variable and get undefined (Delete wrong answers, leave correct ones)
-var scopeArray3 = ["street", "firstFloor", "secondFloor", "neighbors", "neighborsSecondFloor"];
+var scopeArray3 = ["street", "firstFloor", "secondFloor"];
 
 // Which functions accesss the ceiling variable and get "leaking" (Delete wrong answers, leave correct ones)
-var scopeArray4 = ["street", "firstFloor", "secondFloor", "neighbors", "neighborsSecondFloor"];
+var scopeArray4 = ["neighbors", "neighborsSecondFloor"];
 
 // Which functions access the temperature variable and get 72 (Delete wrong answers, leave correct ones)
-var scopeArray5 = ["street", "firstFloor", "secondFloor", "neighbors", "neighborsSecondFloor"];
+var scopeArray5 = ["secondFloor"];
 
 
 // #2  ###################
@@ -50,6 +50,33 @@ var changed = false;
   which changes the variable changed (above) to the boolean true;
   And resolve the promise when setTimeout completes.
 */
+///////////////////////////////////////////////////////////////////////////
+// function async() {
+//   return function () {
+//       var defer = $q.defer()
+//       setTimeout(function() {
+//           changed = true; 
+//       }, 1000);
+
+//       return defer.promise
+//   }
+// }   
+
+var async = function(){
+  var deferred = $q.defer();
+
+setTimeout(function(){
+  deferred.resolve(changed = true);
+})
+
+return deferred.promise;
+}
+
+async().then(function(res){
+  console.log(res)
+})
+
+////////////////////////////////////////////////////////////////////////////
 
 
 var contextObj = {
@@ -65,39 +92,53 @@ function sum(x, y) {
 // Create a function called context1 that will take in two numbers x and y.
 // invoke sum passing in the two numbers x and y and explicitly set the context to the object called contextObj.
 //
-
-
+ function context1(x, y){
+  sum.call(contextObj, x, y);
+}
+  
 
 // #4 ####################
 // # Context 2
-// Write a function called context2 that will take in an array of numbers called params
+// Write a function called  that will take in an array of numbers called params
 // invoke sum and explicity set the context to the object called contextObj, and pass in the array called params.
 //
-
+  function context2 (params) {
+    sum.apply(contextObj, params);
+}
 
 
 
 // #5 ####################
 // # Context 3
 // Write a function called context3.
-// Make context3 permanently link the context of sum to the object contextObj.
+// Make  permanently link the context of sum to the object contextObj.
 // This should give you a new function. Return it.
-
+function context3(){
+  return sum.bind(contextObj);
+}
 
 
 // #6  ###################
 // # Constructor Function
 // Make a constructor function called Sandwich that takes in 3 parameters: bread, meat, spread and assigns them to identically named properties.
 
-
+function Sandwich(bread, meat, spread){
+  this.bread = bread,
+  this.meat = meat,
+  this.spread = spread;
+}
 
 
 // #7  ###################
 // # Implicit binding
 // Make a constructor function called RoadTrip.  It has a property called gasLeft = 100.  It has a property called drive that is a function.  When drive is invoked it uses context to implicitly subract 10 from the gasLeft on the roadTrip.
 
-
-
+var RoadTrip = function () {
+	this.gasLeft = 100;
+	this.drive = function () {
+		this.gasLeft -= 10;
+	};
+};
 
 
 // #8  ###################
@@ -105,20 +146,60 @@ function sum(x, y) {
 // Add prototype function called addTwo to the array type that adds two to the value of every item in the array.
 
 
+// function addTwo(array){
+//   for (var i =0; i< array.length; i++){
+//     array[i] += 2;
+//   }
+//   return array;
+// }
+Array.prototype.addTwo = function () {
+  var array = [];
+	for(var i = 0; i<this.length; i++) {
+	  array.push(this[i]+2);
+	}
+	return array;
+};
 
 
 // #9  ###################
 // # Prototype 2
 // Write a constructor function called CoinToss.  It has a property called results which is an empty array.  It has a prototype function called flip.  When flip is invoked it uses context to implicitly add 'heads' or 'tails' to the results array.
 
+// function CoinToss(var1){
+  // this.var1 = var1,
+  // results = [],
+  // flip = function() {
+  //   if (var1 === "head"){
+  //     results.push("heads");
+  //    } else {
+  //     results.push("tails");
+  //  }
+// }
 
+function CoinToss() {
+	this.results = [];
+}
 
+CoinToss.prototype.flip = function () {
+	var num = Math.floor(Math.random() * 2)  
+	var coin = ["heads", "tails"];
+	return this.results.push(coin[num]);
+};
+
+var game = new CoinToss();
+  
 
 
 // #10  ###################
 // # Closure 1
 // Write a function called animalMachine that creates new animals from two existing animals.  It takes in a parameter called partOne.  It returns a function called animalSmasher.
 // When animalSmasher is invoked it should take in a parameter called partTwo and return a new string that adds partOne and partTwo together.
+
+function animalMachine(partOne){
+  return function animalSmasher(partTwo){
+    return partOne + partTwo;
+  }
+}
 
 
 
@@ -134,7 +215,26 @@ function sum(x, y) {
 //     guestList: <Array of ingredients goes here>
 // }
 // ```
-
+// function partyTime(partyName){
+//   var guest = {
+//     partyName = partyName,
+//     guestList: []
+//     }
+//   return function addGuest(){
+//     guest.push(partyName);
+//     return guest;
+//   }
+// }
+function partyTime (partyName) {
+	var guestList = {
+		partyName: partyName,
+		guestList: []
+	}
+	return function addGuest (val) {
+		guestList.guestList.push(val);
+		return guestList;
+	};
+};
 
 
 
@@ -144,3 +244,11 @@ function sum(x, y) {
 // If both parameters are the same type an the same value return "Exact match".
 // If both parameters have the same value but are different types return "Different types"
 // Otherwise return "Different values"
+
+
+function compareValues (param1, param2) {
+	if(param1 === param2) return "Exact match";
+	if(param1 == param2) return "Different types";
+	else return "Different values";
+};
+
